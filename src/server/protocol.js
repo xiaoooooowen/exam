@@ -321,6 +321,15 @@ function handlePay(orderId, session) {
     return { output: '请指定订单号，或先查看我的订单' };
   }
 
+  // 权限检查：验证订单是否属于当前顾客
+  const order = state.getOrderById(targetOrderId);
+  if (!order) {
+    return { output: '订单不存在' };
+  }
+  if (order.customerId !== session.customerId) {
+    return { output: '❌ 权限不足：只能操作自己的订单' };
+  }
+
   const result = state.updateOrderStatus(targetOrderId, OrderStatus.PAID);
 
   if (!result.success) {
@@ -359,6 +368,15 @@ function handleCancelOrder(orderId, session) {
 
   if (!targetOrderId) {
     return { output: '请指定订单号，或先查看我的订单' };
+  }
+
+  // 权限检查：验证订单是否属于当前顾客
+  const order = state.getOrderById(targetOrderId);
+  if (!order) {
+    return { output: '订单不存在' };
+  }
+  if (order.customerId !== session.customerId) {
+    return { output: '❌ 权限不足：只能操作自己的订单' };
   }
 
   const result = state.updateOrderStatus(targetOrderId, OrderStatus.CANCELLED);

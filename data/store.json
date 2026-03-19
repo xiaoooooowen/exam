@@ -22,6 +22,75 @@
         "createdAt": "2026-03-19T02:41:28.490Z",
         "updatedAt": "2026-03-19T02:41:28.490Z"
       }
+    ],
+    [
+      "ORDFYZ1L8P7",
+      {
+        "id": "ORDFYZ1L8P7",
+        "customerId": "CUST1773888552397Z0U",
+        "customerName": "顾客2396",
+        "items": [
+          {
+            "id": "1",
+            "name": "豆浆",
+            "price": 3,
+            "desc": "现磨浓香豆浆",
+            "quantity": 1,
+            "subtotal": 3
+          }
+        ],
+        "total": 3,
+        "status": "PENDING",
+        "payCode": "mock://pay/ORDFYZ1L8P7",
+        "createdAt": "2026-03-19T02:49:12.397Z",
+        "updatedAt": "2026-03-19T02:49:12.397Z"
+      }
+    ],
+    [
+      "ORDGD3OHBND",
+      {
+        "id": "ORDGD3OHBND",
+        "customerId": "CUST1773888570708UID",
+        "customerName": "顾客0708",
+        "items": [
+          {
+            "id": "1",
+            "name": "豆浆",
+            "price": 3,
+            "desc": "现磨浓香豆浆",
+            "quantity": 1,
+            "subtotal": 3
+          }
+        ],
+        "total": 3,
+        "status": "PENDING",
+        "payCode": "mock://pay/ORDGD3OHBND",
+        "createdAt": "2026-03-19T02:49:30.708Z",
+        "updatedAt": "2026-03-19T02:49:30.708Z"
+      }
+    ],
+    [
+      "ORDH6KXYWWJ",
+      {
+        "id": "ORDH6KXYWWJ",
+        "customerId": "CUST177388860891314W",
+        "customerName": "顾客8912",
+        "items": [
+          {
+            "id": "2",
+            "name": "油条",
+            "price": 2,
+            "desc": "酥脆可口油条",
+            "quantity": 1,
+            "subtotal": 2
+          }
+        ],
+        "total": 2,
+        "status": "PENDING",
+        "payCode": "mock://pay/ORDH6KXYWWJ",
+        "createdAt": "2026-03-19T02:50:08.913Z",
+        "updatedAt": "2026-03-19T02:50:08.913Z"
+      }
     ]
   ],
   "currentCallNumber": 0
