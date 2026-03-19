@@ -167,10 +167,28 @@ function broadcastToType(terminalType, message) {
  */
 function initEventListeners() {
   state.addListener((event, data) => {
+    // 叫号牌端：状态变更或叫号变更时刷新
     if (event === 'order:status_changed' || event === 'call:changed') {
-      // 状态变更时，通知叫号牌端刷新
       broadcastToType(TerminalType.CALL_BOARD, '\x1B[2J\x1B[H');
       broadcastToType(TerminalType.CALL_BOARD, renderCallBoard());
+    }
+
+    // 新订单创建时，通知店主端
+    if (event === 'order:created') {
+      const msg = '\n\n📢 新订单通知!\n' +
+        `  订单号: ${data.id}\n` +
+        `  顾客: ${data.customerName}\n` +
+        `  金额: ¥${data.total}\n` +
+        '  输入 list 查看详情\n\n';
+      broadcastToType(TerminalType.SHOP_OWNER, msg);
+    }
+
+    // 订单状态变更时，通知店主端
+    if (event === 'order:status_changed') {
+      const msg = '\n\n📢 订单状态变更\n' +
+        `  订单号: ${data.orderId}\n` +
+        `  新状态: ${data.order.status}\n\n`;
+      broadcastToType(TerminalType.SHOP_OWNER, msg);
     }
   });
 }

@@ -24,9 +24,10 @@ const TerminalType = {
  * @returns {object} {output, action}
  */
 function processCommand(terminalType, command, session) {
-  const cmd = command.trim().toLowerCase();
-  const parts = cmd.split(/\s+/);
-  const action = parts[0];
+  // 保留原始命令，只将 action 部分转为小写
+  const trimmed = command.trim();
+  const parts = trimmed.split(/\s+/);
+  const action = parts[0].toLowerCase();
 
   // 通用命令
   if (action === 'help' || action === '?') {
@@ -72,22 +73,26 @@ function getHelp(terminalType) {
 
   if (terminalType === TerminalType.CUSTOMER) {
     help += '\n顾客下单端:\n';
-    help += '  menu           - 查看菜单\n';
-    help += '  order <items>  - 下单，格式: order 1,2 3,1 (物品ID,数量)\n';
-    help += '  myorder        - 查看我的订单\n';
-    help += '  pay <orderId>  - 模拟支付订单\n';
-    help += '  quit           - 退出\n';
+    help += '  menu               - 查看菜单\n';
+    help += '  name <昵称>        - 设置昵称\n';
+    help += '  order <items>      - 下单，格式: order 1,2 3,1\n';
+    help += '  myorder            - 查看我的订单\n';
+    help += '  pay <orderId>      - 模拟支付订单\n';
+    help += '  cancel <orderId>   - 取消订单\n';
+    help += '  quit               - 退出\n';
   }
 
   if (terminalType === TerminalType.SHOP_OWNER) {
     help += '\n店主管理端:\n';
-    help += '  list           - 查看所有订单\n';
-    help += '  pending        - 查看待支付订单\n';
-    help += '  paid           - 查看已支付订单\n';
-    help += '  cooking        - 查看制作中订单\n';
-    help += '  call <num>     - 设置当前叫号\n';
+    help += '  list               - 查看所有订单\n';
+    help += '  pending            - 查看待支付订单\n';
+    help += '  paid               - 查看已支付订单\n';
+    help += '  cooking            - 查看制作中订单\n';
+    help += '  call <num>         - 设置当前叫号\n';
+    help += '  next               - 叫下一个号\n';
     help += '  update <id> <status> - 更新订单状态\n';
-    help += '                   状态: pending/paid/cooking/completed\n';
+    help += '                     状态: pending/paid/cooking/completed\n';
+    help += '  batch <status>     - 批量更新所有已支付订单\n';
   }
 
   return help + '\n';
@@ -195,6 +200,12 @@ function handleCustomerCommand(action, parts, session) {
 
     case 'refresh':
       return { output: session.orderId ? renderMyOrders(session) : '暂无订单' };
+
+    case 'name':
+      return handleSetName(parts.slice(1).join(' '), session);
+
+    case 'cancel':
+      return handleCancelOrder(parts[1]?.toUpperCase(), session);
 
     default:
       return { output: '未知命令，输入 help 查看帮助' };
@@ -322,6 +333,47 @@ function handlePay(orderId, session) {
 }
 
 /**
+ * 处理设置昵称
+ */
+function handleSetName(name, session) {
+  if (!name || name.trim().length === 0) {
+    return { output: '请输入昵称: name <你的昵称>' };
+  }
+
+  const maxLen = 10;
+  if (name.length > maxLen) {
+    return { output: `昵称最多 ${maxLen} 个字符` };
+  }
+
+  session.customerName = name.trim();
+  return {
+    output: `\n✅ 昵称已设置为: ${session.customerName}\n   后续下单将使用此昵称\n`
+  };
+}
+
+/**
+ * 处理取消订单
+ */
+function handleCancelOrder(orderId, session) {
+  const targetOrderId = orderId || session.orderId;
+
+  if (!targetOrderId) {
+    return { output: '请指定订单号，或先查看我的订单' };
+  }
+
+  const result = state.updateOrderStatus(targetOrderId, OrderStatus.CANCELLED);
+
+  if (!result.success) {
+    return { output: `取消失败: ${result.error}` };
+  }
+
+  session.orderId = null;
+  return {
+    output: `\n✅ 订单已取消: ${targetOrderId}\n`
+  };
+}
+
+/**
  * 处理店主端命令
  */
 function handleShopOwnerCommand(action, parts, session) {
@@ -346,6 +398,12 @@ function handleShopOwnerCommand(action, parts, session) {
 
     case 'refresh':
       return { output: renderAllOrders() };
+
+    case 'batch':
+      return handleBatchUpdate(parts.slice(1));
+
+    case 'next':
+      return handleNextCall();
 
     default:
       return { output: '未知命令，输入 help 查看帮助' };
@@ -447,6 +505,66 @@ function handleUpdateOrder(orderId, status) {
 
   return {
     output: `\n✅ 订单 ${orderId} 状态已更新为: ${StatusChinese[newStatus]}\n`
+  };
+}
+
+/**
+ * 处理批量更新订单状态
+ * 格式: batch cooking (将所有已支付订单设为制作中)
+ */
+function handleBatchUpdate(args) {
+  if (args.length === 0) {
+    return { output: '请输入: batch <状态>\n示例: batch cooking\n将所有已支付订单设为制作中' };
+  }
+
+  const statusMap = {
+    'pending': OrderStatus.PENDING,
+    'paid': OrderStatus.PAID,
+    'cooking': OrderStatus.COOKING,
+    'completed': OrderStatus.COMPLETED
+  };
+
+  const targetStatus = statusMap[args[0].toLowerCase()];
+  if (!targetStatus) {
+    return { output: `无效状态: ${args[0]}\n可选: pending, paid, cooking, completed` };
+  }
+
+  // 获取可以批量更新的订单
+  const orders = state.getOrders({ status: OrderStatus.PAID });
+  let successCount = 0;
+  let failCount = 0;
+
+  orders.forEach(order => {
+    const result = state.updateOrderStatus(order.id, targetStatus);
+    if (result.success) successCount++;
+    else failCount++;
+  });
+
+  return {
+    output: `\n批量操作完成:\n  成功: ${successCount}\n  失败: ${failCount}\n  目标状态: ${StatusChinese[targetStatus]}\n`
+  };
+}
+
+/**
+ * 处理叫下一个号
+ * 自动查找下一个待制作的订单并叫号
+ */
+function handleNextCall() {
+  const orders = state.getOrders({ status: OrderStatus.PAID });
+
+  if (orders.length === 0) {
+    return { output: '\n暂无等待制作的订单\n' };
+  }
+
+  // 获取最早支付的订单
+  const nextOrder = orders[0];
+  const currentNum = state.getCurrentCallNumber();
+  const newNum = currentNum + 1;
+
+  state.setCallNumber(newNum);
+
+  return {
+    output: `\n✅ 叫号: ${newNum}\n   订单号: ${nextOrder.id}\n   顾客: ${nextOrder.customerName}\n   金额: ¥${nextOrder.total}\n`
   };
 }
 
