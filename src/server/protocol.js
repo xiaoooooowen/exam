@@ -272,8 +272,10 @@ function renderOrderCreated(order) {
 
   output += `\n  总计: ¥${order.total}\n`;
   output += `\n  状态: ${StatusChinese[order.status]}\n`;
-  output += `\n  支付二维码:\n`;
-  output += `  ${order.payCode}\n`;
+  output += '\n  ┌──────────────────────┐\n';
+  output += '  │   📱 扫码支付       │\n';
+  output += `  │  ${order.payCode}  │\n`;
+  output += '  └──────────────────────┘\n';
   output += '\n  请完成支付后等待叫号\n';
 
   return output;

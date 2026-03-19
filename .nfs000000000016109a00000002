@@ -48,9 +48,9 @@ start() {
         echo -e "${GREEN}服务已启动 (PID: $SERVER_PID)${NC}"
         echo ""
         echo "连接方式:"
-        echo -e "  ${YELLOW}叫号牌端${NC}: node client.js 8024"
-        echo -e "  ${YELLOW}顾客下单${NC}: node client.js 8025"
-        echo -e "  ${YELLOW}店主管理${NC}: node client.js 8026"
+        echo -e "  ${YELLOW}叫号牌端${NC}: nc localhost 8024"
+        echo -e "  ${YELLOW}顾客下单${NC}: nc localhost 8025"
+        echo -e "  ${YELLOW}店主管理${NC}: nc localhost 8026"
         echo ""
         echo "日志文件: /tmp/breakfast_server.log"
     else

@@ -91,6 +91,83 @@
         "createdAt": "2026-03-19T02:50:08.913Z",
         "updatedAt": "2026-03-19T02:50:08.913Z"
       }
+    ],
+    [
+      "ORD3L5N1QOG",
+      {
+        "id": "ORD3L5N1QOG",
+        "customerId": "CUST17738896542359IF",
+        "customerName": "顾客5235",
+        "items": [
+          {
+            "id": "1",
+            "name": "豆浆",
+            "price": 3,
+            "desc": "现磨浓香豆浆",
+            "quantity": 10,
+            "subtotal": 30
+          },
+          {
+            "id": "4",
+            "name": "煎饼",
+            "price": 6,
+            "desc": "杂粮煎饼加蛋",
+            "quantity": 10,
+            "subtotal": 60
+          }
+        ],
+        "total": 90,
+        "status": "PENDING",
+        "payCode": "mock://pay/ORD3L5N1QOG",
+        "createdAt": "2026-03-19T03:07:34.235Z",
+        "updatedAt": "2026-03-19T03:07:34.235Z"
+      }
+    ],
+    [
+      "ORD8UKQSEMM",
+      {
+        "id": "ORD8UKQSEMM",
+        "customerId": "CUST1773889899722OK4",
+        "customerName": "顾客9721",
+        "items": [
+          {
+            "id": "1",
+            "name": "豆浆",
+            "price": 3,
+            "desc": "现磨浓香豆浆",
+            "quantity": 1,
+            "subtotal": 3
+          }
+        ],
+        "total": 3,
+        "status": "PENDING",
+        "payCode": "mock://pay/ORD8UKQSEMM",
+        "createdAt": "2026-03-19T03:11:39.722Z",
+        "updatedAt": "2026-03-19T03:11:39.722Z"
+      }
+    ],
+    [
+      "ORD9W9OFNZW",
+      {
+        "id": "ORD9W9OFNZW",
+        "customerId": "CUST17738899485724W6",
+        "customerName": "顾客8570",
+        "items": [
+          {
+            "id": "1",
+            "name": "豆浆",
+            "price": 3,
+            "desc": "现磨浓香豆浆",
+            "quantity": 1,
+            "subtotal": 3
+          }
+        ],
+        "total": 3,
+        "status": "PENDING",
+        "payCode": "mock://pay/ORD9W9OFNZW",
+        "createdAt": "2026-03-19T03:12:28.572Z",
+        "updatedAt": "2026-03-19T03:12:28.572Z"
+      }
     ]
   ],
   "currentCallNumber": 0
