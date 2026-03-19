@@ -1,0 +1,28 @@
+{
+  "orders": [
+    [
+      "ORD610Q8ZSW",
+      {
+        "id": "ORD610Q8ZSW",
+        "customerId": "CUST1773888088490YEL",
+        "customerName": "顾客8488",
+        "items": [
+          {
+            "id": "1",
+            "name": "豆浆",
+            "price": 3,
+            "desc": "现磨浓香豆浆",
+            "quantity": 1,
+            "subtotal": 3
+          }
+        ],
+        "total": 3,
+        "status": "PENDING",
+        "payCode": "mock://pay/ORD610Q8ZSW",
+        "createdAt": "2026-03-19T02:41:28.490Z",
+        "updatedAt": "2026-03-19T02:41:28.490Z"
+      }
+    ]
+  ],
+  "currentCallNumber": 0
+}

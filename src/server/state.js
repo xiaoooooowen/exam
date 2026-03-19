@@ -3,8 +3,14 @@
  * 负责管理订单、状态存储、状态变更、事件广播
  */
 
+const fs = require('fs');
+const path = require('path');
+
 const { OrderStatus, canTransition, StatusChinese } = require('../shared/status');
 const { getMenuItem } = require('../shared/menu');
+
+// 数据文件路径
+const DATA_FILE = path.join(__dirname, '../../data/store.json');
 
 // 订单存储
 let orders = new Map();
@@ -14,6 +20,52 @@ let currentCallNumber = 0;
 
 // 事件监听器
 const listeners = new Set();
+
+// 确保数据目录存在
+const dataDir = path.dirname(DATA_FILE);
+if (!fs.existsSync(dataDir)) {
+  fs.mkdirSync(dataDir, { recursive: true });
+}
+
+/**
+ * 保存数据到文件（持久化）
+ */
+function saveData() {
+  try {
+    const data = {
+      orders: Array.from(orders.entries()),
+      currentCallNumber
+    };
+    fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
+  } catch (err) {
+    console.error('保存数据失败:', err.message);
+  }
+}
+
+/**
+ * 从文件加载数据
+ */
+function loadData() {
+  try {
+    if (fs.existsSync(DATA_FILE)) {
+      const raw = fs.readFileSync(DATA_FILE, 'utf-8');
+      const data = JSON.parse(raw);
+
+      if (data.orders) {
+        orders = new Map(data.orders);
+      }
+      if (typeof data.currentCallNumber === 'number') {
+        currentCallNumber = data.currentCallNumber;
+      }
+      console.log('已加载持久化数据:', orders.size, '个订单');
+    }
+  } catch (err) {
+    console.error('加载数据失败:', err.message);
+  }
+}
+
+// 启动时加载数据
+loadData();
 
 /**
  * 生成订单ID
@@ -89,6 +141,9 @@ function createOrder(customerName, items) {
 
   orders.set(orderId, order);
 
+  // 持久化保存
+  saveData();
+
   // 广播新订单事件
   broadcast('order:created', order);
 
@@ -119,6 +174,9 @@ function updateOrderStatus(orderId, newStatus) {
   const oldStatus = order.status;
   order.status = newStatus;
   order.updatedAt = new Date().toISOString();
+
+  // 持久化保存
+  saveData();
 
   // 广播状态变更事件
   broadcast('order:status_changed', {
@@ -167,6 +225,7 @@ function getCurrentCallNumber() {
  */
 function setCallNumber(number) {
   currentCallNumber = number;
+  saveData();
   broadcast('call:changed', { currentNumber: number });
   return currentCallNumber;
 }
