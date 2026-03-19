@@ -1,0 +1,12 @@
+{
+  "name": "exam",
+  "version": "1.0.0",
+  "description": "实现一个多端 TUI 系统，模拟早餐店从下单到制作到支付确认的完整流程。系统包含三个终端入口： - 叫号牌端（只读） - 顾客下单端（可操作） - 店主管理端（可操作）",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
